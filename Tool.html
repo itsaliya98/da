@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Cipher Desk</title>
+<style>
+/* Cipher Lab · soft blush edition */
+:root {
+  color-scheme: light;
+  --bg:#fbf8ff; --panel:#fefdff; --panel2:#f8f4ff;
+  --line:#e0d8ef; --ink:#403650; --muted:#786d8c;
+  --aqua:#885ecf; --purple:#9783b9; --rose:#835bc9;
+  --green:#34856c; --round:20px;
+}
+* {box-sizing:border-box}
+html {scroll-behavior:smooth}
+body {
+  margin:0;
+  background:
+    radial-gradient(ellipse at 92% 2%,rgba(218,205,252,.74),transparent 37%),
+    radial-gradient(ellipse at 3% 19%,rgba(231,222,255,.74),transparent 35%),
+    linear-gradient(180deg,#fbf9ff 0%,#f8f4ff 47%,#fbf9ff 100%);
+  color:var(--ink);
+  font:15px/1.55 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+button,input,select,textarea {font:inherit}
+button,select {cursor:pointer}
+button:disabled,input:disabled {opacity:.5;cursor:not-allowed}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible {outline:3px solid #926bd4;outline-offset:3px}
+a {color:#6840ae}
+.wrap {width:min(1190px,calc(100% - 40px));margin:auto;padding-bottom:64px}
+.top {display:flex;justify-content:space-between;align-items:center;padding:27px 0 20px;border-bottom:1px solid #dfd6ef;gap:15px}
+.brand {display:flex;align-items:center;gap:11px;letter-spacing:.12em;font-weight:850;font-size:12px;color:#54476b}
+.mark {
+  width:40px;height:40px;background:linear-gradient(145deg,#cdb5f6,#a781e7);
+  color:#4a3274;display:grid;place-items:center;border:1px solid #bca2ea;
+  box-shadow:0 6px 16px #bba1e950;border-radius:13px;font-size:25px;font-weight:900;
+}
+.top small {color:#7d7192;text-align:right;font-size:11px;line-height:1.8}
+.hero {padding:52px 0 38px;position:relative}
+.hero::after {
+  content:'✧';position:absolute;right:clamp(5px,7vw,115px);top:23px;
+  color:#c4aced;font:110px/1 Georgia,serif;pointer-events:none;opacity:.55;
+}
+.eyebrow {font-size:12px;color:#7753b5;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+.hero h1 {position:relative;z-index:1;font-size:clamp(39px,6.4vw,73px);line-height:1.065;margin:13px 0 17px;letter-spacing:-.055em;color:#403651}
+.hero h1 em {font-style:normal;color:#8860ce}
+.intro {position:relative;z-index:1;max-width:670px;color:#736b80;font-size:16px;margin:0 0 23px}
+.chips {display:flex;flex-wrap:wrap;gap:8px}
+.chip {border:1px solid #dcd1ef;border-radius:999px;padding:7px 13px;color:#6d5498;font-size:12px;background:#fcfaff;box-shadow:0 3px 10px #cab9e722}
+.grid {display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:18px}
+.card {
+  background:linear-gradient(165deg,#fffefd,#fcfaff);
+  border:1px solid #e1d9ee;border-radius:var(--round);padding:25px;min-width:0;
+  box-shadow:0 12px 35px rgba(99,75,151,.065),0 2px 5px rgba(81,61,126,.035);
+}
+.card h2 {margin:0;font-size:21px;letter-spacing:-.024em;color:#443957}
+.card h3 {margin:0;font-size:17px}
+.lead {color:var(--muted);font-size:13px;margin:8px 0 21px}
+.section-index {color:#7f5bbd;font-size:11px;letter-spacing:.12em;font-weight:850;margin-bottom:8px}
+label.field {display:block;font-size:13px;font-weight:740;color:#524862;margin:0 0 8px}
+.subtle,.mode-note {color:var(--muted);font-size:12px}
+.input,textarea,select {
+  border:1px solid #d6cbe8;background:#fff;color:#483f58;
+  border-radius:12px;padding:12px 13px;width:100%;min-width:0;
+  box-shadow:inset 0 1px 2px #bea9e314;
+}
+.input:hover,textarea:hover,select:hover {border-color:#b8a6d6}
+.input:focus,textarea:focus,select:focus {border-color:#9975d6}
+textarea {resize:vertical;min-height:190px;line-height:1.55}
+.input::placeholder,textarea::placeholder {color:#a39ab3}
+.row {display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.columns {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.space {height:16px}
+.tabs {display:flex;gap:7px;margin-bottom:16px;padding:5px;background:#f2edfa;border:1px solid #e3dcef;border-radius:13px}
+.tab {flex:1;background:transparent;border:0;color:#807396;padding:10px;border-radius:9px;font-weight:750}
+.tab.active {background:#fff;color:#6c49a8;box-shadow:0 3px 9px #b7a7d350;border:1px solid #e5ddf2}
+.upload {border:1.5px dashed #b79fdf;background:linear-gradient(135deg,#fbf8ff,#f5efff);border-radius:14px;padding:23px;text-align:center;display:block;cursor:pointer}
+.upload:hover {border-color:#7e5abb;background:#f6f0ff}
+.upload strong {display:block;margin-bottom:4px;color:#5b4680}
+.upload input {margin-top:12px;max-width:100%;font-size:12px;color:#786d8c}
+.note {background:#f4f0fa;border-left:3px solid #9c88bf;padding:11px 13px;border-radius:0 10px 10px 0;font-size:12px;color:#675c7a}
+.warning {background:#fff4ed;border-left-color:#da9b67;color:#69558b}
+.settings {display:grid;gap:16px}
+.mode-note {margin-top:7px}
+.passline {display:flex;gap:8px}
+.passline .input {flex:1}
+.mini {padding:10px 12px;border:1px solid #d0c3e6;border-radius:10px;background:#f7f2ff;color:#69548e;white-space:nowrap;font-weight:650}
+.mini:hover {background:#ebe2fa}
+.button {border:1px solid #d4c9e8;border-radius:12px;padding:13px 17px;background:#ece5f8;color:#5a4b75;font-weight:750;transition:transform .15s,background .15s,box-shadow .15s}
+.button:hover {transform:translateY(-1px);background:#e2d8f4;box-shadow:0 5px 12px #bdacd920}
+.button.primary {border-color:#7e54c6;background:linear-gradient(135deg,#a787df,#8a63cc);color:#fff;box-shadow:0 7px 18px #8d67cd37}
+.button.primary:hover {background:linear-gradient(135deg,#9873d8,#774fbb)}
+.button.ghost {border:1px solid #d1c5e6;background:#fff;color:#685588}
+.actionbar {margin:17px 0 8px;display:flex;gap:10px;flex-wrap:wrap}
+.alert {margin:14px 0 0;padding:11px 14px;background:#eef9f3;border:1px solid #b3deca;color:#316e57;border-radius:10px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.alert.error {background:#f6f0ff;border-color:#c8b7e4;color:#6c46ae}
+.full {grid-column:1/-1}
+.results {margin-top:0}
+.results-head {display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.kpis {display:flex;gap:8px;flex-wrap:wrap}
+.kpi {font-size:12px;background:#f0eafa;padding:6px 10px;border:1px solid #e0d7f0;border-radius:9px;color:#6a568c}
+.outputs {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.outputpane {border:1px solid #ded6ec;background:#fbf9ff;border-radius:13px;padding:16px;min-width:0}
+.outputpane small {display:block;color:#817498;margin-bottom:9px;font-weight:750;letter-spacing:.05em}
+.outputpane pre {white-space:pre-wrap;overflow-wrap:anywhere;max-height:350px;overflow:auto;margin:0;min-height:85px;color:#4d455c;font-size:13px}
+.outputpane.result {border-color:#c4b0e5;background:#f7f2ff}
+.tablewrap {overflow:auto;border:1px solid #e0d8ee;border-radius:12px}
+table {width:100%;border-collapse:collapse;min-width:625px;font-size:12px;text-align:left}
+th {background:#f0e9fb;color:#665386;font-weight:800;white-space:nowrap}
+th,td {padding:10px 11px;border-bottom:1px solid #e5dff0;vertical-align:top}
+tbody tr:nth-child(even) {background:#fbf9ff}
+tbody tr:hover {background:#f6f0ff}
+tbody tr:last-child td {border:0}
+td.clip {max-width:290px;overflow-wrap:anywhere;white-space:pre-wrap}
+.pill {display:inline-block;padding:3px 8px;border-radius:30px;background:#ece5f7;color:#69568a;white-space:nowrap}
+.pill.good {background:#e8f6ec;color:#2c815b}
+.pill.bad {background:#f6f0ff;color:#754cbc}
+.check {width:17px;height:17px;accent-color:#8961cf}
+.file-meta {font-size:12px;color:var(--muted);margin:10px 0}
+.pagination {justify-content:space-between;margin-top:13px}
+.muted {color:var(--muted)}
+.chart-header {display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+.legend {display:flex;gap:15px;color:var(--muted);font-size:12px}
+.dot {display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.chart-scroll {overflow-x:auto;margin-top:12px}
+.chart-scroll svg {max-width:100%;min-width:610px;display:block}
+.foot {color:#938ba2;font-size:12px;margin:22px 0 0}
+.danger {color:#724bb4}
+.hidden {display:none!important}
+.steps {display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.steps span {color:#786992;background:#f0eaf9;padding:7px 10px;border-radius:10px;font-size:12px}
+.sep {height:1px;background:var(--line);margin:22px 0}
+.checklist {display:grid;gap:7px;font-size:13px;color:#766c87}
+.checklist b {color:#7f5bbd;margin-right:7px}
+.toast {position:fixed;bottom:20px;right:20px;max-width:350px;padding:12px 16px;color:#fff;background:#825ac6;border-radius:12px;box-shadow:0 8px 25px #836cab60;z-index:50;font-size:13px;font-weight:700}
+.small-button {font-size:11px;padding:6px 10px;border-radius:7px}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:850px) {
+  .grid {grid-template-columns:1fr}
+  .hero {padding-top:29px}
+  .card {padding:20px}
+}
+@media(max-width:500px) {
+  .wrap {width:min(calc(100% - 24px),1190px)}
+  .top {padding:17px 0}
+  .top small {font-size:9px}
+  .brand {font-size:10px;letter-spacing:.07em}
+  .mark {width:35px;height:35px;flex-shrink:0}
+  .hero h1 {font-size:43px}
+  .hero::after {font-size:65px;right:6px;top:6px}
+  .columns,.outputs {grid-template-columns:1fr}
+  .actionbar .button {flex:1;min-width:130px}
+  .card h2 {font-size:20px}
+  .passline {flex-wrap:wrap}
+  .passline .mini {width:100%}
+}
+.square{min-width:0;width:min(100%,22rem);margin:12px auto;border-collapse:collapse}.square td,.square th{text-align:center;padding:.35rem;border:1px solid #d8cdee}.square th{color:#503875;background:#efe8fa}
+body{background:#f5f3f8;color:#282333;font-family:Inter,system-ui,sans-serif}
+.wrap{max-width:1120px}.mast{padding:24px 0 18px;border-bottom:2px solid #423157;margin-bottom:20px}
+.mast h1{font:700 clamp(25px,4vw,37px)/1.1 system-ui;letter-spacing:-.045em;margin:0;color:#36244e}
+.grid{grid-template-columns:minmax(270px,.75fr) minmax(0,1.6fr);gap:12px}
+.card{min-width:0;border:1px solid #dfdae7;border-radius:9px;background:white;box-shadow:none;padding:20px}
+.card h2{font:650 19px/1.25 system-ui;letter-spacing:-.025em;color:#33293f}
+.card[aria-labelledby="config-heading"]{background:#eeeaf5}.settings .columns{grid-template-columns:1fr}
+input,select,textarea,.button,.mini,.tab,.upload,.outputpane{border-radius:6px!important}
+textarea{min-height:225px}.tabs{width:fit-content}.button.primary,.button.primary:hover{background:#59407e;color:white;border-color:#59407e}
+.commands{padding:12px 16px}.actionbar{margin:0}.commands .button{min-height:40px}.outputpane{box-shadow:none}
+section[aria-labelledby="chart-heading"]:has(#chartBox.hidden){display:none}
+@media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}.mast{padding-top:16px}.card{padding:15px}.settings .columns{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="mast"><h1>Cipher Desk</h1></header>
+<main class="grid">
+<section class="card" aria-labelledby="config-heading"><h2 id="config-heading">Cipher settings</h2>
+<div class="settings"><div class="columns"><div><label class="field" for="cipher">Cipher</label><select id="cipher"><option value="vigenere">Vigenère</option><option value="aes">AES-256-GCM</option><option value="polybius">Polybius Square</option></select></div><div><label class="field" for="action">Action</label><select id="action"><option value="encrypt">Encrypt</option><option value="decrypt">Decrypt</option></select></div></div>
+<div id="vigConfig"><label class="field" for="vigKey">Vigenère keyword (A–Z only)</label><div class="passline"><input class="input" id="vigKey" type="password" autocomplete="off" spellcheck="false" placeholder="Enter keyword"><button class="mini" type="button" data-toggle="vigKey" aria-label="Show or hide Vigenère key">Show</button></div></div>
+<div id="polybiusConfig" class="hidden"><div class="note">Row first, then column. I/J share 24. Letters decode in uppercase. A slash marks a space and U+ marks a literal character.</div><table class="square" aria-label="Polybius coordinates"><thead><tr><td></td><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th></tr></thead><tbody><tr><th scope="row">1</th><td>A</td><td>B</td><td>C</td><td>D</td><td>E</td></tr><tr><th scope="row">2</th><td>F</td><td>G</td><td>H</td><td>I/J</td><td>K</td></tr><tr><th scope="row">3</th><td>L</td><td>M</td><td>N</td><td>O</td><td>P</td></tr><tr><th scope="row">4</th><td>Q</td><td>R</td><td>S</td><td>T</td><td>U</td></tr><tr><th scope="row">5</th><td>V</td><td>W</td><td>X</td><td>Y</td><td>Z</td></tr></tbody></table></div>
+<div id="aesConfig" class="hidden"><label class="field" for="aesKeyType">AES key method</label><select id="aesKeyType"><option value="passphrase">Passphrase → PBKDF2-derived 256-bit key</option><option value="hex">Raw 256-bit key (64 hex characters)</option><option value="rawb64">Raw 256-bit key (Base64, 32 bytes)</option></select><div class="space"></div><label class="field" for="aesKey">Passphrase or AES key</label><div class="passline"><input class="input" id="aesKey" type="password" autocomplete="off" spellcheck="false" placeholder="Enter your secret"><button class="mini" type="button" data-toggle="aesKey" aria-label="Show or hide AES key">Show</button></div></div>
+<div><label class="field" for="format">Encrypted message format</label><select id="format"><option value="auto">Auto-detect for decryption / standard output</option><option value="plain">Standard (without DD prefix)</option><option value="dd1">DD1:Vigenère text</option><option value="dd2">DD2.MessageID.IV.Tag.Ciphertext</option></select></div>
+<div id="dd2Extra" class="hidden"><label class="field" for="dd2ID">MessageID for DD2 encryption (typed text only)</label><input class="input" id="dd2ID" placeholder="MSG-000212" autocomplete="off" spellcheck="false"><div class="space"></div><label class="field" for="dd2AAD">DD2 authenticated additional data (AAD)</label><select id="dd2AAD"><option value="auto">Auto on decrypt (try none, then MessageID)</option><option value="none">None</option><option value="id">MessageID encoded in UTF-8</option></select></div>
+</div>
+</section>
+<section class="card" aria-labelledby="source-heading"><h2 id="source-heading">Input</h2>
+<div class="tabs" role="tablist" aria-label="Input type"><button type="button" id="tabText" class="tab active" role="tab" aria-selected="true">Text</button><button type="button" id="tabCsv" class="tab" role="tab" aria-selected="false">CSV / TXT</button></div>
+<div id="textSource"><label class="field" for="sourceText">Message</label><textarea id="sourceText" placeholder="Type or paste a message…"></textarea></div>
+<div id="fileSource" class="hidden"><label class="upload"><strong>Choose a .csv or .txt file</strong><input id="fileInput" type="file" accept=".csv,.txt,text/csv,text/plain"></label><p id="fileMeta" class="file-meta">No file selected.</p>
+<div id="csvControl" class="hidden"><label class="field" for="messageColumn">Column containing the message</label><select id="messageColumn"></select><div class="row" style="justify-content:space-between;margin:12px 0"><label class="row" style="cursor:pointer"><input class="check" id="selectAll" type="checkbox" checked> Select all rows</label><span class="subtle" id="rowCounter"></span></div>
+<div class="row" style="margin:0 0 14px"><button type="button" class="mini small-button" id="selectDD1">Select DD1 only</button><button type="button" class="mini small-button" id="selectDD2">Select DD2 only</button><button type="button" class="mini small-button" id="selectPlain">Select unencrypted</button><button type="button" class="mini small-button" id="selectNone">Select none</button></div><div class="tablewrap"><table><thead><tr><th>Use</th><th>Row</th><th>MessageID</th><th>Message preview</th><th>Result status</th></tr></thead><tbody id="rowsBody"></tbody></table></div><div class="row pagination"><button class="mini" id="prevPage" type="button">← Previous</button><span class="subtle" id="pageLabel"></span><button class="mini" id="nextPage" type="button">Next →</button></div></div>
+<div id="txtHelp" class="hidden"></div></div>
+</section>
+<section class="card full commands" aria-label="Actions"><div class="actionbar"><button class="button primary" id="runBtn" type="button">Run cipher</button><button class="button ghost" id="copyBtn" type="button">Copy results</button><button class="button ghost" id="clearBtn" type="button">Clear</button><button class="button" id="csvBtn" type="button">↓ Download CSV</button><button class="button" id="txtBtn" type="button">↓ Download TXT</button></div><p id="message" class="alert hidden" role="status" aria-live="polite"></p></section>
+<section class="card full results" aria-labelledby="results-heading"><div class="results-head"><div><h2 id="results-heading">Results</h2></div><div id="kpis" class="kpis"><span class="kpi">No results yet</span></div></div><div id="singleResults" class="outputs"><div class="outputpane"><small>ORIGINAL</small><pre id="originalView">—</pre></div><div class="outputpane result"><small>RESULT</small><pre id="resultView">—</pre></div></div><div id="csvResults" class="hidden"><div class="tablewrap"><table><thead><tr><th>Row</th><th>MessageID</th><th>Original text</th><th>Processed text</th><th>Status</th><th>Copy</th></tr></thead><tbody id="resultsBody"></tbody></table></div><p id="resultsLimit" class="mode-note"></p></div></section>
+<section class="card full" aria-labelledby="chart-heading"><div class="chart-header"><div><h2 id="chart-heading">Letter frequency analysis</h2></div><div class="legend"><span><i class="dot" style="background:var(--aqua)"></i>Before</span><span><i class="dot" style="background:var(--purple)"></i>After</span></div></div><div id="chartEmpty" class="hidden"></div><div id="chartBox" class="chart-scroll hidden"><svg id="chartSvg" role="img" aria-label="Grouped bar chart comparing percentages of letters A through Z, before and after Vigenère encryption."></svg></div><p id="chartFoot" class="mode-note"></p></section>
+</main>
+
+</div><div id="toast" class="toast hidden" role="status"></div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const state={mode:'text',csv:null,filename:'',selected:new Set(),results:[],single:null,page:0,running:false};
+const enc=new TextEncoder(),dec=new TextDecoder('utf-8',{fatal:true});
+const pageSize=15;
+function show(id,visible){$(id).classList.toggle('hidden',!visible)}
+function setMessage(value,bad=false){const el=$('message');el.textContent=value;el.classList.toggle('error',bad);show('message',!!value)}
+function toast(value){$('toast').textContent=value;show('toast',true);setTimeout(()=>show('toast',false),2500)}
+function setMode(mode){state.mode=mode;['text','csv'].forEach(m=>{const active=(mode===m);$(m==='text'?'tabText':'tabCsv').classList.toggle('active',active);$(m==='text'?'tabText':'tabCsv').setAttribute('aria-selected',String(active))});show('textSource',mode==='text');show('fileSource',mode==='csv');renderResults();}
+$('tabText').addEventListener('click',()=>setMode('text'));
+$('tabCsv').addEventListener('click',()=>setMode('csv'));
+function syncCipher(){const c=$('cipher').value;show('vigConfig',c==='vigenere');show('aesConfig',c==='aes');show('polybiusConfig',c==='polybius');show('dd2Extra',c==='aes'&&$('format').value==='dd2');if($('format').value==='dd2'&&c==='aes'){$('aesKeyType').value='hex';$('aesKey').placeholder='64 hexadecimal digits';}}
+$('cipher').addEventListener('change',syncCipher);$('format').addEventListener('change',syncCipher);
+$('aesKeyType').addEventListener('change',()=>{$('aesKey').value='';$('aesKey').placeholder=$('aesKeyType').value==='hex'?'64 hexadecimal digits':$('aesKeyType').value==='rawb64'?'Base64-encoded 32-byte key':'Enter your passphrase';});
+document.querySelectorAll('[data-toggle]').forEach(btn=>btn.addEventListener('click',()=>{let el=$(btn.dataset.toggle);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'Show':'Hide';}));
+function parseCsv(s){s=s.replace(/^\uFEFF/,'');if(!s.trim())throw Error('This CSV is empty.');const rows=[];let row=[],field='',inQ=false,closed=false,started=false;
+for(let i=0;i<s.length;i++){const ch=s[i];if(inQ){if(ch==='"'){if(s[i+1]==='"'){field+='"';i++}else{inQ=false;closed=true}}else{field+=ch}}else if(ch==='"'){if(field!==''||closed)throw Error('Invalid CSV: unexpected quotation mark near character '+(i+1)+'.');inQ=true;started=true}else if(ch===','){row.push(field);field='';closed=false;started=true}else if(ch==='\r'||ch==='\n'){row.push(field);rows.push(row);row=[];field='';closed=false;started=false;if(ch==='\r'&&s[i+1]==='\n')i++}else{if(closed)throw Error('Invalid CSV: text found after a closing quote near character '+(i+1)+'.');field+=ch;started=true}}
+if(inQ)throw Error('Invalid CSV: a quoted field is not closed.');if(started||field!==''||row.length){row.push(field);rows.push(row)}if(!rows.length||!rows[0].length)throw Error('CSV needs a header row.');const headers=rows.shift();if(headers.every(h=>!h.trim()))throw Error('CSV header row is blank.');const data=rows.map((r,i)=>{if(r.length>headers.length)throw Error('CSV row '+(i+2)+' has more fields than headers.');return r.concat(Array(headers.length-r.length).fill(''))});return {headers,rows:data};}
+function csvEscape(v){let s=String(v??'');return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function csvEncode(arr){return '\uFEFF'+arr.map(row=>row.map(csvEscape).join(',')).join('\r\n')+'\r\n'}
+function colNameIndex(){return state.csv.headers.findIndex(h=>/^message[\s_-]*id$/i.test(h.trim()))}
+function previewText(s,len=150){s=String(s).replace(/\r?\n/g,' ↵ ');return s.length>len?s.slice(0,len)+'…':s}
+function loadCsv(text,name){state.csv=parseCsv(text);state.filename=name;state.selected=new Set(state.csv.rows.map((_,i)=>i));state.results=new Array(state.csv.rows.length).fill(null);state.page=0;let m=$('messageColumn');m.replaceChildren();state.csv.headers.forEach((h,i)=>{const opt=document.createElement('option');opt.value=String(i);opt.textContent=(h||'(blank column)')+' · '+(i+1);m.append(opt)});let idx=state.csv.headers.findIndex(h=>/^(message|message_text|messagebody|text|body|content|ciphertext|encryptedmessage)$/i.test(h.replace(/\s/g,'')));m.value=String(idx>=0?idx:0);show('csvControl',true);show('txtHelp',false);$('fileMeta').textContent=name+' · '+state.csv.rows.length+' data row(s) · '+state.csv.headers.length+' column(s)';if(state.csv.headers.some(h=>h.trim()==='Content')){const ci=state.csv.headers.findIndex(h=>h.trim()==='Content');const dd1=state.csv.rows.filter(r=>r[ci].startsWith('DD1:')).length,dd2=state.csv.rows.filter(r=>r[ci].startsWith('DD2.')).length;$('fileMeta').textContent+=` · ${dd1} DD1 / ${dd2} DD2 / ${state.csv.rows.length-dd1-dd2} other`; }renderRows();renderResults();setMessage('Loaded '+state.csv.rows.length+' CSV rows. Choose a message column and the rows to process.');}
+$('fileInput').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{const ext=file.name.split('.').pop().toLowerCase();if(!['csv','txt'].includes(ext))throw Error('Use a .csv or .txt file.');if(file.size>15*1024*1024)throw Error('Choose a file smaller than 15 MB.');const t=await file.text();if(ext==='csv'){loadCsv(t,file.name)}else{state.filename=file.name;state.csv=null;state.single=null;$('sourceText').value=t.replace(/^\uFEFF/,'');$('fileMeta').textContent=file.name+' · '+t.length+' characters';show('csvControl',false);show('txtHelp',true);renderResults();setMessage('TXT loaded. Process it here or edit it in the text tab.')}}catch(err){setMessage(err.message,true)}});
+$('messageColumn').addEventListener('change',()=>{state.results=new Array(state.csv.rows.length).fill(null);renderRows();renderResults()});
+$('selectAll').addEventListener('change',e=>{state.selected=e.target.checked?new Set(state.csv.rows.map((_,i)=>i)):new Set();renderRows()});
+function selectByPrefix(kind){if(!state.csv)return;const col=Number($('messageColumn').value);state.selected=new Set(state.csv.rows.flatMap((r,i)=>{const s=r[col]||'',type=s.startsWith('DD1:')?'dd1':s.startsWith('DD2.')?'dd2':'plain';return type===kind?[i]:[]}));renderRows();setMessage(`${state.selected.size} ${kind==='plain'?'unencrypted':kind.toUpperCase()} row(s) selected. Other rows will be left unchanged.`)}
+$('selectDD1').addEventListener('click',()=>selectByPrefix('dd1'));
+$('selectDD2').addEventListener('click',()=>selectByPrefix('dd2'));
+$('selectPlain').addEventListener('click',()=>selectByPrefix('plain'));
+$('selectNone').addEventListener('click',()=>{state.selected=new Set();renderRows();setMessage('No rows selected.');});
+$('prevPage').addEventListener('click',()=>{state.page=Math.max(0,state.page-1);renderRows()});
+$('nextPage').addEventListener('click',()=>{state.page++;renderRows()});
+function renderRows(){if(!state.csv)return;const total=state.csv.rows.length,selected=state.selected.size,ci=Number($('messageColumn').value),idCol=colNameIndex();$('rowCounter').textContent=selected+' of '+total+' selected';$('selectAll').checked=total>0&&selected===total;$('selectAll').indeterminate=selected>0&&selected<total;const pages=Math.max(1,Math.ceil(total/pageSize));state.page=Math.min(state.page,pages-1);$('pageLabel').textContent='Page '+(state.page+1)+' / '+pages; $('prevPage').disabled=state.page<=0;$('nextPage').disabled=state.page+1>=pages;let tbody=$('rowsBody');tbody.replaceChildren();if(!total){let tr=document.createElement('tr');let td=document.createElement('td');td.colSpan=5;td.textContent='No data rows.';tr.append(td);tbody.append(tr)}
+for(let i=state.page*pageSize;i<Math.min((state.page+1)*pageSize,total);i++){const r=state.csv.rows[i],tr=document.createElement('tr'),checkTd=document.createElement('td'),check=document.createElement('input');check.type='checkbox';check.className='check';check.checked=state.selected.has(i);check.setAttribute('aria-label','Include row '+(i+2));check.addEventListener('change',()=>{if(check.checked)state.selected.add(i);else state.selected.delete(i);renderRows()});checkTd.append(check);tr.append(checkTd);const fields=[String(i+2),idCol>=0?r[idCol]:'—',previewText(r[ci]??'')];for(const [j,v] of fields.entries()){const td=document.createElement('td');td.textContent=v;if(j===2)td.className='clip';tr.append(td)}const td=document.createElement('td'),pill=document.createElement('span');const res=state.results[i];pill.className='pill '+(res?(res.ok?'good':'bad'):'');pill.textContent=res?(res.ok?'OK':'Error'):state.selected.has(i)?'Ready':'Unselected';td.append(pill);tr.append(td);tbody.append(tr)}}
+function classical(text,key,action){const n=key.length;let out='',j=0;for(const ch of text){const code=ch.charCodeAt(0),isUpper=code>=65&&code<=90,isLower=code>=97&&code<=122;if(!isUpper&&!isLower){out+=ch;continue}const base=isUpper?65:97;const shift=key[j%n];out+=String.fromCharCode((code-base+(action==='encrypt'?shift:26-shift))%26+base);j++}return out}
+function vig(text,key,action){if(!/^[a-zA-Z]+$/.test(key))throw Error('Invalid Vigenère key: enter letters A–Z only (no spaces or digits).');return classical(text,[...key.toUpperCase()].map(c=>c.charCodeAt(0)-65),action)}
+function polybius(text, action) {
+  const alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ';
+  if (action === 'encrypt') {
+    return Array.from(text, character => {
+      if (character === ' ') return '/';
+      if (!/^[a-z]$/i.test(character)) {
+        return 'U+' + character.codePointAt(0).toString(16).toUpperCase();
+      }
+      const index = alphabet.indexOf(character.toUpperCase().replace('J', 'I'));
+      return String(Math.floor(index / 5) + 1) + String(index % 5 + 1);
+    }).join(' ');
+  }
+  if (!text.trim()) return '';
+  return text.trim().split(/\s+/).map(token => {
+    if (token === '/') return ' ';
+    if (/^(?:[1-5]{2})+$/.test(token)) {
+      return token.match(/../g).map(pair => alphabet[(Number(pair[0]) - 1) * 5 + Number(pair[1]) - 1]).join('');
+    }
+    if (/^U\+[0-9a-f]{1,6}$/i.test(token)) {
+      const code = parseInt(token.slice(2), 16);
+      if (code <= 0x10ffff) return String.fromCodePoint(code);
+    }
+    throw Error('Invalid Polybius token “' + token + '”. Use coordinate pairs from 11 to 55 with digits 1–5.');
+  }).join('');
+}
+function bytesToBase64(u){let s='';for(const b of u)s+=String.fromCharCode(b);return btoa(s)}
+function base64ToBytes(s,label){if(!/^[A-Za-z0-9+/]*={0,2}$/.test(s)||s.length%4!==0)throw Error('Invalid '+label+': expected Base64.');try{return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}catch(_){throw Error('Invalid '+label+': Base64 data cannot be decoded.')}}
+function hexBytes(s,expected,label){if(!new RegExp('^[0-9a-fA-F]{'+expected*2+'}$').test(s))throw Error('Invalid '+label+': expected '+(expected*2)+' hexadecimal characters.');return Uint8Array.from(s.match(/../g),b=>parseInt(b,16))}
+function hexToBytes(s){return hexBytes(s,32,'AES-256 key')}
+function bytesToHex(bytes){return [...bytes].map(b=>b.toString(16).padStart(2,'0')).join('')}
+function base64UrlToBytes(s){if(!/^[A-Za-z0-9_-]*$/.test(s)||s.length%4===1)throw Error('Invalid DD2 ciphertext: expected unpadded Base64URL.');return base64ToBytes(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4),'DD2 ciphertext')}
+function bytesToBase64Url(bytes){return bytesToBase64(bytes).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function parseDD2(s){const p=s.trim().split('.');if(p.length!==5||p[0]!=='DD2')throw Error('Invalid DD2: expected DD2.MessageID.24-hex-IV.32-hex-tag.Base64URL-ciphertext.');const id=p[1];if(!/^MSG-\d{6}$/.test(id))throw Error('Invalid DD2 MessageID: expected MSG-000212 style.');const iv=hexBytes(p[2],12,'DD2 IV'),tag=hexBytes(p[3],16,'DD2 authentication tag'),cipher=base64UrlToBytes(p[4]);const combined=new Uint8Array(cipher.length+tag.length);combined.set(cipher);combined.set(tag,cipher.length);return {method:'hex',kind:'dd2',id,iv,ct:combined}}
+function aesAAD(id,mode){return mode==='id'?enc.encode(id):undefined}
+async function rawKey(value,method='hex'){const bytes=method==='hex'?hexToBytes(value):base64ToBytes(value,'AES key');if(bytes.length!==32)throw Error('Invalid AES-256 key: expected exactly 32 bytes.');return crypto.subtle.importKey('raw',bytes,{name:'AES-GCM'},false,['encrypt','decrypt'])}
+async function deriveKey(password,salt){let raw=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:250000,hash:'SHA-256'},raw,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+function assertWebCrypto(){if(!globalThis.crypto?.subtle||!crypto.getRandomValues)throw Error('AES-256-GCM needs a secure context. Open this page over HTTPS or http://localhost in a modern browser.');}
+function normalizeDD(value,alg,format,action){
+if(action==='encrypt')return {text:value};
+if(format==='dd1'&&alg!=='vigenere')throw Error('DD1 requires Vigenère.');
+if(format==='dd2'&&alg!=='aes')throw Error('DD2 requires AES-256-GCM.');
+const dd1=value.startsWith('DD1:'),dd2=value.startsWith('DD2.');
+if(format==='dd1'&&!dd1)throw Error('Expected DD1: followed by encrypted text.');
+if(format==='dd2'&&!dd2)throw Error('Expected DD2.MessageID.IV.Tag.Ciphertext.');
+if(dd1){if(alg!=='vigenere')throw Error('DD1 is Vigenère text; select Vigenère to decrypt.');if(format==='plain')throw Error('DD1: prefix detected. Switch to Auto or DD1 format.');return {text:value.slice(4)};}
+if(dd2){if(alg!=='aes')throw Error('DD2 requires AES-256-GCM.');if(format==='plain')throw Error('DD2 envelope detected. Switch to Auto or DD2 format.');return {text:value};}
+return {text:value};}
+function parseAesPayload(s){if(s.trim().startsWith('DD2.'))return parseDD2(s);let p=s.trim().split(':');if(p.length===5&&p[0]==='AESGCM1'&&p[1]==='PBKDF2'){let salt=base64ToBytes(p[2],'salt'),iv=base64ToBytes(p[3],'IV'),ct=base64ToBytes(p[4],'ciphertext');if(salt.length!==16)throw Error('Invalid AES salt: expected 16 bytes.');if(iv.length!==12)throw Error('Invalid AES IV: expected 12 bytes.');if(ct.length<16)throw Error('Invalid AES payload: authentication tag is missing.');return {method:'passphrase',salt,iv,ct}}
+if(p.length===4&&p[0]==='AESGCM1'&&p[1]==='RAW'){let iv=base64ToBytes(p[2],'IV'),ct=base64ToBytes(p[3],'ciphertext');if(iv.length!==12)throw Error('Invalid AES IV: expected 12 bytes.');if(ct.length<16)throw Error('Invalid AES payload: authentication tag is missing.');return {method:'hex',iv,ct}}
+// Also accept a common JSON representation; verify class-specific format against reference document.
+if(s.startsWith('{')){let obj;try{obj=JSON.parse(s)}catch(_){throw Error('Invalid AES JSON: could not parse ciphertext.')}let iv=base64ToBytes(obj.iv||obj.nonce||'','IV'),ct=base64ToBytes(obj.ciphertext||obj.ct||obj.data||'','ciphertext');if(obj.tag){const tag=base64ToBytes(obj.tag,'tag'),combined=new Uint8Array(ct.length+tag.length);combined.set(ct);combined.set(tag,ct.length);ct=combined}if(iv.length!==12||ct.length<16)throw Error('Invalid AES JSON: IV must be 12 bytes and ciphertext must include a 16-byte tag.');if(obj.salt){let salt=base64ToBytes(obj.salt,'salt');if(salt.length!==16)throw Error('Invalid AES JSON: salt must be 16 bytes.');return {method:'passphrase',salt,iv,ct}}return {method:'hex',iv,ct}}
+throw Error('Invalid AES message format. Expected AESGCM1:PBKDF2:salt:iv:ciphertext, AESGCM1:RAW:iv:ciphertext, or compatible JSON.');}
+async function prepare(){
+ const alg=$('cipher').value,action=$('action').value,format=$('format').value;
+ if(format==='dd1'&&alg!=='vigenere')throw Error('DD1 format uses Vigenère. Select Vigenère.');
+ if(format==='dd2'&&alg!=='aes')throw Error('DD2 format uses AES-256-GCM. Select AES.');
+ const ctx={alg,action,format,aad:$('dd2AAD').value,dd2ID:$('dd2ID').value.trim()};
+ if(alg==='vigenere'){
+    ctx.key=$('vigKey').value;
+    if(!/^[A-Za-z]+$/.test(ctx.key))throw Error('Vigenère requires a keyword using A–Z only.');
+ }else if(alg==='aes'){
+    assertWebCrypto();ctx.keyType=$('aesKeyType').value;ctx.password=$('aesKey').value;
+    if(format==='dd2'&&ctx.keyType==='passphrase')throw Error('DD2 contains no PBKDF2 salt. Use a raw 256-bit key (hex or Base64) or follow your reference-page key derivation instructions.');
+    if(ctx.keyType==='hex'||ctx.keyType==='rawb64')ctx.key=await rawKey(ctx.password,ctx.keyType);
+    else{
+       if(!ctx.password)throw Error('Enter an AES passphrase.');
+       if(action==='encrypt'&&ctx.password.length<8)throw Error('Use an AES passphrase of at least 8 characters for encryption.');
+       if(action==='encrypt'){ctx.salt=crypto.getRandomValues(new Uint8Array(16));ctx.key=await deriveKey(ctx.password,ctx.salt)}
+       ctx.keyCache=new Map();
+    }
+ }
+ return ctx;
+}
+async function transform(input,ctx,rowID=''){
+ let {text}=normalizeDD(input,ctx.alg,ctx.format,ctx.action),result;
+ if(ctx.alg==='vigenere')result=vig(text,ctx.key,ctx.action);
+ else if(ctx.alg==='polybius')result=polybius(text,ctx.action);
+ else if(ctx.action==='encrypt'){
+   const isDD2=ctx.format==='dd2';
+   const id=rowID||ctx.dd2ID;
+   if(isDD2&&(!/^MSG-\d{6}$/.test(id)))throw Error('DD2 encryption requires a valid MessageID (MSG-000212 style). Provide one above or include a MessageID CSV column.');
+   const iv=crypto.getRandomValues(new Uint8Array(12)),mode=ctx.aad==='id'?'id':'none';
+   const options={name:'AES-GCM',iv,tagLength:128};if(isDD2&&mode==='id')options.additionalData=aesAAD(id,'id');
+   const encrypted=new Uint8Array(await crypto.subtle.encrypt(options,ctx.key,enc.encode(text)));
+   if(isDD2){
+     const body=encrypted.slice(0,-16),tag=encrypted.slice(-16);
+     result=`DD2.${id}.${bytesToHex(iv)}.${bytesToHex(tag)}.${bytesToBase64Url(body)}`;
+   }else result=ctx.keyType==='passphrase'?`AESGCM1:PBKDF2:${bytesToBase64(ctx.salt)}:${bytesToBase64(iv)}:${bytesToBase64(encrypted)}`:`AESGCM1:RAW:${bytesToBase64(iv)}:${bytesToBase64(encrypted)}`;
+ }else{
+   const pkg=parseAesPayload(text);
+   if(pkg.kind==='dd2'&&rowID&&pkg.id!==rowID)throw Error(`DD2 MessageID ${pkg.id} does not match CSV record ${rowID}.`);
+   const raw=ctx.keyType==='hex'||ctx.keyType==='rawb64';
+   if((pkg.method==='hex')!==raw)throw Error('AES key type does not match this payload ('+(pkg.method==='hex'?'raw 256-bit key':'passphrase')+').');
+   let key;if(raw)key=ctx.key;else{
+     let salt64=bytesToBase64(pkg.salt);
+     if(!ctx.keyCache.has(salt64))ctx.keyCache.set(salt64,await deriveKey(ctx.password,pkg.salt));
+     key=ctx.keyCache.get(salt64);
+   }
+   const modes=pkg.kind==='dd2'?(ctx.aad==='auto'?['none','id']:[ctx.aad]):['none'];
+   let lastError;
+   for(const mode of modes){
+      try{
+        const options={name:'AES-GCM',iv:pkg.iv,tagLength:128};if(mode==='id')options.additionalData=aesAAD(pkg.id,'id');
+        result=dec.decode(await crypto.subtle.decrypt(options,key,pkg.ct));lastError=null;break;
+      }catch(e){lastError=e}
+   }
+   if(lastError)throw Error('AES authentication failed: incorrect key, wrong AAD settings, altered ciphertext, or invalid IV/tag.');
+ }
+ if(ctx.action==='encrypt'&&ctx.format==='dd1')result='DD1:'+result;
+ return result;
+}
+function sourceForProcess(){if(state.mode==='csv'&&state.csv)return 'csv';return 'text'}
+function setRunning(b){state.running=b;$('runBtn').disabled=b;$('runBtn').textContent=b?'Processing…':'Run cipher'}
+$('runBtn').addEventListener('click',async()=>{if(state.running)return;setMessage('');setRunning(true);try{let ctx=await prepare(),isCsv=sourceForProcess()==='csv';if(isCsv){if(!state.selected.size)throw Error('Select at least one CSV row to process.');const col=Number($('messageColumn').value),rows=state.csv.rows;state.results=new Array(rows.length).fill(null);let done=0,failed=0;for(let i=0;i<rows.length;i++){if(!state.selected.has(i))continue;let original=rows[i][col];try{if(original==='')throw Error('Selected message cell is empty.');const idCol=colNameIndex(),rowID=idCol>=0?rows[i][idCol]:'';const output=await transform(original,ctx,rowID);state.results[i]={ok:true,original,output,status:'OK'};done++}catch(e){state.results[i]={ok:false,original,output:'',status:'ERROR: '+e.message};failed++}if((done+failed)%20===0)await new Promise(resolve=>setTimeout(resolve,0));}renderRows();renderResults();updateChart(ctx);setMessage(`CSV processed. ${done} succeeded, ${failed} failed, ${rows.length-done-failed} unselected. Original rows were not changed.`,failed>0)}else{const original=$('sourceText').value;if(!original)throw Error('Enter text or load a TXT file first.');const output=await transform(original,ctx);state.single={ok:true,original,output,status:'OK'};renderResults();updateChart(ctx);setMessage('Message processed successfully. You can copy or download the result.');}}catch(e){setMessage(e.message,true);if(sourceForProcess()!=='csv'){state.single={ok:false,original:$('sourceText').value,output:'',status:'ERROR: '+e.message};renderResults();hideChart()}}finally{setRunning(false)}});
+function renderResults(){let csv=sourceForProcess()==='csv';show('singleResults',!csv);show('csvResults',csv);let success=0,errors=0;if(csv){if(!state.csv){$('kpis').textContent='No CSV loaded';$('resultsBody').replaceChildren();return}const idCol=colNameIndex(),tbody=$('resultsBody');tbody.replaceChildren();let processed=state.results.map((r,i)=>({r,i})).filter(v=>v.r);for(const {r} of processed){if(r.ok)success++;else errors++}const visible=processed.slice(0,100);for(const {r,i} of visible){const tr=document.createElement('tr');for(const [j,val] of [String(i+2),idCol>=0?state.csv.rows[i][idCol]:'—',r.original,r.output].entries()){const td=document.createElement('td');td.textContent=val;if(j>1)td.className='clip';tr.append(td)}const st=document.createElement('td'),badge=document.createElement('span');badge.className='pill '+(r.ok?'good':'bad');badge.textContent=r.status;st.append(badge);tr.append(st);const copyCell=document.createElement('td'),copy=document.createElement('button');copy.textContent='Copy';copy.type='button';copy.className='mini small-button';copy.disabled=!r.ok;copy.onclick=()=>copyText(r.output);copyCell.append(copy);tr.append(copyCell);tbody.append(tr)}$('resultsLimit').textContent=processed.length>100?'Showing the first 100 processed rows. CSV/TXT export includes every row and status.':'The full CSV download includes every original row, including unselected rows.';const list=$('kpis');list.replaceChildren();for(const text of [`${state.csv.rows.length} original rows`,`${success} succeeded`,`${errors} errors`,`${state.csv.rows.length-success-errors} not processed`]){const span=document.createElement('span');span.className='kpi';span.textContent=text;list.append(span)}}else{let r=state.single;$('originalView').textContent=r?.original||$('sourceText').value||'—';$('resultView').textContent=r?(r.ok?r.output:r.status):'—';const list=$('kpis');list.replaceChildren();const span=document.createElement('span');span.className='kpi';span.textContent=r?(r.ok?'1 successful message':'1 error'):'No results yet';list.append(span)}}
+async function copyText(s){try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(s)}else{const el=document.createElement('textarea');el.value=s;el.style.position='fixed';el.style.opacity='0';document.body.append(el);el.select();if(!document.execCommand('copy'))throw Error('Clipboard is unavailable');el.remove()}toast('Copied to clipboard')}catch(_){setMessage('Clipboard access was blocked. Select and copy the text manually.',true)}}
+$('copyBtn').addEventListener('click',()=>{if(sourceForProcess()==='csv'){const good=state.results.filter(r=>r?.ok);if(!good.length){setMessage('Process at least one CSV row before copying.',true);return}copyText(good.map(r=>r.output).join('\n'))}else{if(!state.single?.ok){setMessage('Process a message before copying.',true);return}copyText(state.single.output)}});
+function uniqueName(base,existing){let label=base,i=2;while(existing.includes(label)){label=base+'_'+i++}existing.push(label);return label}
+function dataForCsvExport(){if(sourceForProcess()==='csv'){const {headers,rows}=state.csv;let occupied=headers.slice();const resultCol=uniqueName('CipherResult',occupied),statusCol=uniqueName('CipherStatus',occupied),actionCol=uniqueName('CipherAction',occupied);return [headers.concat([resultCol,statusCol,actionCol]),...rows.map((r,i)=>{const result=state.results[i];return r.concat([result?.output||'',result?result.status:(state.selected.has(i)?'NOT_PROCESSED':'NOT_SELECTED'),result?$('action').value:''])})]}if(!state.single)throw Error('Process a message first.');return [['Original','Result','Status'],[state.single.original,state.single.output,state.single.status]]}
+function makeBlobFile(s,filename,mime){const blob=new Blob([s],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast(filename+' ready')}
+$('csvBtn').addEventListener('click',()=>{try{if(sourceForProcess()==='csv'&&!state.csv)throw Error('Load a CSV file first.');makeBlobFile(csvEncode(dataForCsvExport()),'cipher_results.csv','text/csv;charset=utf-8')}catch(e){setMessage(e.message,true)}});
+$('txtBtn').addEventListener('click',()=>{try{let str;if(sourceForProcess()==='csv'){if(!state.csv)throw Error('Load a CSV file first.');const idIdx=colNameIndex();str=state.csv.rows.map((row,i)=>{const r=state.results[i];return 'CSV row '+(i+2)+(idIdx>=0?' | MessageID: '+row[idIdx]:'')+'\nStatus: '+(r?r.status:state.selected.has(i)?'NOT_PROCESSED':'NOT_SELECTED')+'\nOriginal: '+JSON.stringify(row[Number($('messageColumn').value)])+'\nResult: '+JSON.stringify(r?.output||'')}).join('\n\n')}else{if(!state.single)throw Error('Process a message first.');str='Status: '+state.single.status+'\nOriginal:\n'+state.single.original+'\n\nResult:\n'+state.single.output}makeBlobFile(str,'cipher_results.txt','text/plain;charset=utf-8')}catch(e){setMessage(e.message,true)}});
+$('clearBtn').addEventListener('click',()=>{$('dd2ID').value='';$('sourceText').value='';$('fileInput').value='';$('vigKey').value='';$('aesKey').value='';state.csv=null;state.filename='';state.selected=new Set();state.results=[];state.single=null;state.page=0;show('csvControl',false);show('txtHelp',false);$('fileMeta').textContent='No file selected.';setMode('text');renderResults();hideChart();setMessage('Cleared messages, files, results, and keys.');});
+function counts(s){let a=Array(26).fill(0),n=0;for(const c of s.toUpperCase()){const code=c.charCodeAt(0);if(code>=65&&code<=90){a[code-65]++;n++}}return {percent:a.map(v=>n?100*v/n:0),total:n}}
+function hideChart(){$('chartSvg').replaceChildren();show('chartBox',false);show('chartEmpty',true);$('chartFoot').textContent=''}
+function updateChart(ctx){if(ctx.alg!=='vigenere'||ctx.action!=='encrypt'){hideChart();return}let before='',after='';if(sourceForProcess()==='csv'){for(const r of state.results){if(r?.ok){before+=r.original+'\n';after+=(ctx.format==='dd1'?r.output.replace(/^DD1:/,''):r.output)+'\n'}}}else if(state.single?.ok){before=state.single.original;after=ctx.format==='dd1'?state.single.output.replace(/^DD1:/,''):state.single.output}else{hideChart();return}const a=counts(before),b=counts(after);if(a.total===0){hideChart();$('chartEmpty').textContent='There are no A–Z letters in the processed text to chart.';return}show('chartEmpty',false);show('chartBox',true);$('chartFoot').textContent=`Compared ${a.total} A–Z plaintext letters and ${b.total} A–Z ciphertext letters. Percentages ignore digits, spaces, punctuation, and non-Latin letters.`;const svg=$('chartSvg'),ns='http://www.w3.org/2000/svg';svg.replaceChildren();const W=1050,H=350,ml=36,mr=10,top=25,bottom=43,graphW=W-ml-mr,graphH=H-top-bottom,max=Math.max(5,...a.percent,...b.percent),ceiling=Math.ceil(max/5)*5;svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('width',String(W));svg.setAttribute('height',String(H));function node(tag,attrs={},t){const el=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));if(t!==undefined)el.textContent=t;svg.append(el);return el}for(let j=0;j<=4;j++){const pct=ceiling*j/4,y=top+graphH*(1-j/4);node('line',{x1:ml,y1:y,x2:W-mr,y2:y,stroke:'#e0d8ef','stroke-dasharray':'4 5'});node('text',{x:ml-5,y:y+4,'text-anchor':'end','font-size':11,fill:'#807494'},pct.toFixed(pct%1?1:0)+'%')}for(let i=0;i<26;i++){const center=ml+((i+.5)*graphW/26),bw=Math.min(14,graphW/26*.32);for(let k=0;k<2;k++){const p=k?b.percent[i]:a.percent[i],barH=p/ceiling*graphH,x=center+(k?1:-bw-1);let rect=node('rect',{x,y:top+graphH-barH,width:bw,height:Math.max(.1,barH),rx:2,fill:k?'#a08dc1':'#916bd1'});let tooltip=document.createElementNS(ns,'title');tooltip.textContent=`${String.fromCharCode(65+i)} ${k?'after':'before'}: ${p.toFixed(2)}%`;rect.append(tooltip)}node('text',{x:center,y:H-22,'text-anchor':'middle','font-size':13,'font-weight':650,fill:'#6b5d83'},String.fromCharCode(65+i))}}
+// Useful for a quick, non-secret smoke test in the browser console.
+window.cipherLabSelfTest=async()=>{const a=vig('Attack at dawn!','LEMON','encrypt');if(a!=='Lxfopv ef rnhr!')throw Error('Vigenère known-answer test failed');if(vig(a,'LEMON','decrypt')!=='Attack at dawn!')throw Error('Vigenère round-trip failed');if(polybius('CAT','encrypt')!=='13 11 44'||polybius('131144','decrypt')!=='CAT')throw Error('Polybius test failed');if(normalizeDD('DD1:Lxfopv ef rnhr!','vigenere','auto','decrypt').text!=='Lxfopv ef rnhr!')throw Error('DD1 detection failed');const s=csvEncode([['MessageID','Message'],['A-1','Hello, "team"\nLine two']]);const r=parseCsv(s);if(r.rows[0][1]!=='Hello, "team"\nLine two')throw Error('CSV test failed');assertWebCrypto();const key=await rawKey('0'.repeat(64)),iv=crypto.getRandomValues(new Uint8Array(12)),ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,enc.encode('hello'));if(dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct))!=='hello')throw Error('AES round-trip failed');const id='MSG-000212',options={name:'AES-GCM',iv,tagLength:128},cipherAndTag=new Uint8Array(await crypto.subtle.encrypt(options,key,enc.encode('DD2 test'))),envelope=`DD2.${id}.${bytesToHex(iv)}.${bytesToHex(cipherAndTag.slice(-16))}.${bytesToBase64Url(cipherAndTag.slice(0,-16))}`,pkg=parseDD2(envelope);if(pkg.id!==id||dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:pkg.iv,tagLength:128},key,pkg.ct))!=='DD2 test')throw Error('DD2 round-trip failed');return 'Vigenère, Polybius Square, DD1, DD2, CSV and AES smoke tests passed.';};
+</script>
+</body>
+</html>
